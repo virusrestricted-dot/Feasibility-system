@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Business Feasibility DSS - Input</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  
+  <style>
+    :root {
+      --primary: #00695c;
+      --primary-dark: #004d40;
+      --accent: #00897b;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .main-container {
+      max-width: 900px;
+      width: 100%;
+    }
+
+    .header-section {
+      text-align: center;
+      color: white;
+      margin-bottom: 40px;
+    }
+
+    .header-section h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .header-section p {
+      font-size: 1.1rem;
+      opacity: 0.95;
+    }
+
+    .form-card {
+      background: white;
+      border-radius: 24px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+    }
+
+    .form-header {
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+      color: white;
+      padding: 32px;
+      text-align: center;
+    }
+
+    .form-header h2 {
+      font-size: 1.75rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .form-header p {
+      opacity: 0.9;
+      font-size: 0.95rem;
+    }
+
+    .process-flow {
+      display: flex;
+      justify-content: space-between;
+      padding: 24px 32px;
+      background: #f8f9fa;
+      border-bottom: 2px solid #e9ecef;
+      overflow-x: auto;
+    }
+
+    .process-step {
+      text-align: center;
+      flex: 1;
+      min-width: 100px;
+      position: relative;
+    }
+
+    .process-step:not(:last-child)::after {
+      content: '→';
+      position: absolute;
+      right: -20px;
+      top: 20px;
+      color: var(--primary);
+      font-weight: bold;
+      font-size: 1.5rem;
+    }
+
+    .process-icon {
+      width: 50px;
+      height: 50px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 8px;
+      font-size: 1.25rem;
+    }
+
+    .process-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .form-body {
+      padding: 40px 32px;
+    }
+
+    .form-section {
+      margin-bottom: 32px;
+    }
+
+    .form-section-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--primary-dark);
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .form-label {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .form-control, .form-select {
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 1rem;
+      transition: all 0.3s;
+    }
+
+    .form-control:focus, .form-select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(0, 105, 92, 0.1);
+    }
+
+    .business-type-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+
+    .business-type-option {
+      position: relative;
+    }
+
+    .business-type-option input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+    }
+
+    .business-type-option label {
+      display: block;
+      padding: 20px;
+      background: #f8f9fa;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-align: center;
+    }
+
+    .business-type-option input[type="radio"]:checked + label {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      color: white;
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 105, 92, 0.3);
+    }
+
+    .business-type-option label i {
+      font-size: 2rem;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .business-type-option label .type-name {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .input-group-text {
+      background: var(--primary);
+      color: white;
+      border: 2px solid var(--primary);
+      font-weight: 600;
+    }
+
+    .btn-analyze {
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+      color: white;
+      border: none;
+      padding: 16px 48px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 0 auto;
+      box-shadow: 0 4px 12px rgba(0, 105, 92, 0.3);
+    }
+
+    .btn-analyze:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 105, 92, 0.4);
+    }
+
+    .info-box {
+      background: #e3f2fd;
+      border-left: 4px solid #2196f3;
+      padding: 16px;
+      border-radius: 8px;
+      margin-top: 24px;
+    }
+
+    .info-box i {
+      color: #2196f3;
+      margin-right: 8px;
+    }
+
+    @media (max-width: 768px) {
+      .header-section h1 {
+        font-size: 1.75rem;
+      }
+
+      .process-flow {
+        overflow-x: auto;
+      }
+
+      .process-step:not(:last-child)::after {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="main-container">
+    <div class="header-section">
+      <h1><i class="fas fa-chart-line"></i> Business Feasibility DSS</h1>
+      <p>Intelligent Decision Support System for Business Site Selection in Barobo</p>
+    </div>
+
+    <div class="form-card">
+      <div class="form-header">
+        <h2>Start Your Feasibility Analysis</h2>
+        <p>Provide your business requirements and we'll analyze the best locations</p>
+      </div>
+
+      <div class="process-flow">
+        <div class="process-step">
+          <div class="process-icon"><i class="fas fa-database"></i></div>
+          <div class="process-label">Data Collection</div>
+        </div>
+        <div class="process-step">
+          <div class="process-icon"><i class="fas fa-brain"></i></div>
+          <div class="process-label">Model Training</div>
+        </div>
+        <div class="process-step">
+          <div class="process-icon"><i class="fas fa-map-marked-alt"></i></div>
+          <div class="process-label">Geospatial Analysis</div>
+        </div>
+        <div class="process-step">
+          <div class="process-icon"><i class="fas fa-chart-bar"></i></div>
+          <div class="process-label">Predictive Modeling</div>
+        </div>
+        <div class="process-step">
+          <div class="process-icon"><i class="fas fa-file-alt"></i></div>
+          <div class="process-label">Report Generation</div>
+        </div>
+      </div>
+
+      <form action="/analyze" method="POST" class="form-body">
+        <!-- Business Type Section -->
+        <div class="form-section">
+          <div class="form-section-title">
+            <i class="fas fa-store"></i>
+            <span>Business Type</span>
+          </div>
+          
+          <div class="business-type-grid">
+            {% for key, value in business_types.items() %}
+            <div class="business-type-option">
+              <input type="radio" id="{{ key }}" name="business_type" value="{{ key }}" 
+                     {% if key == 'retail' %}checked{% endif %}>
+              <label for="{{ key }}">
+                <i class="fas fa-{% if key == 'retail' %}shopping-cart{% elif key == 'food' %}utensils{% elif key == 'service' %}wrench{% elif key == 'wholesale' %}boxes{% else %}heartbeat{% endif %}"></i>
+                <div class="type-name">{{ value.name }}</div>
+              </label>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Capital Investment Section -->
+        <div class="form-section">
+          <div class="form-section-title">
+            <i class="fas fa-money-bill-wave"></i>
+            <span>Capital Investment</span>
+          </div>
+          
+          <div class="mb-3">
+            <label for="capital" class="form-label">
+              <i class="fas fa-peso-sign"></i>
+              Investment Amount (PHP)
+            </label>
+            <div class="input-group">
+              <span class="input-group-text">₱</span>
+              <input type="number" class="form-control" id="capital" name="capital" 
+                     value="500000" min="100000" step="50000" required>
+            </div>
+            <small class="text-muted">Enter your planned investment amount</small>
+          </div>
+
+          <div class="row">
+            <div class="col-md-4">
+              <button type="button" class="btn btn-sm btn-outline-secondary w-100" 
+                      onclick="document.getElementById('capital').value = 250000">
+                ₱250,000
+              </button>
+            </div>
+            <div class="col-md-4">
+              <button type="button" class="btn btn-sm btn-outline-secondary w-100" 
+                      onclick="document.getElementById('capital').value = 500000">
+                ₱500,000
+              </button>
+            </div>
+            <div class="col-md-4">
+              <button type="button" class="btn btn-sm btn-outline-secondary w-100" 
+                      onclick="document.getElementById('capital').value = 1000000">
+                ₱1,000,000
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Preferred Location Section -->
+        <div class="form-section">
+          <div class="form-section-title">
+            <i class="fas fa-map-pin"></i>
+            <span>Preferred Location (Optional)</span>
+          </div>
+          
+          <div class="mb-3">
+            <label for="preferred_location" class="form-label">
+              <i class="fas fa-location-dot"></i>
+              Barangay Preference
+            </label>
+            <input type="text" class="form-control" id="preferred_location" 
+                   name="preferred_location" placeholder="e.g., Poblacion, Dapdap">
+            <small class="text-muted">Leave blank to analyze all locations</small>
+          </div>
+        </div>
+
+        <div class="info-box">
+          <i class="fas fa-info-circle"></i>
+          <strong>What happens next?</strong> Our system will analyze population data, income levels, 
+          competition, infrastructure, and accessibility to provide you with detailed site recommendations 
+          and feasibility scores for each barangay in Barobo.
+        </div>
+
+        <div class="text-center mt-4">
+          <button type="submit" class="btn-analyze">
+            <i class="fas fa-search"></i>
+            <span>Analyze Feasibility</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Add loading state on form submit
+    document.querySelector('form').addEventListener('submit', function(e) {
+      const btn = document.querySelector('.btn-analyze');
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Processing Analysis...</span>';
+      btn.disabled = true;
+    });
+
+    // Format currency input
+    document.getElementById('capital').addEventListener('input', function(e) {
+      let value = this.value.replace(/,/g, '');
+      if (!isNaN(value) && value !== '') {
+        this.value = value;
+      }
+    });
+  </script>
+</body>
+</html>

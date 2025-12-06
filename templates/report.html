@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Feasibility Report - Business DSS</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  
+  <style>
+    :root {
+      --primary: #00695c;
+      --primary-dark: #004d40;
+      --success: #2e7d32;
+      --warning: #f57c00;
+      --danger: #c62828;
+      --bg-light: #f8fafb;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #f8fafb 0%, #e8f5e9 100%);
+      color: #2c3e50;
+    }
+
+    .navbar {
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+      padding: 16px 0;
+    }
+
+    .navbar-brand {
+      color: white !important;
+      font-weight: 700;
+      font-size: 1.5rem;
+    }
+
+    .btn-new-analysis {
+      background: white;
+      color: var(--primary);
+      border: none;
+      padding: 8px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+
+    .btn-new-analysis:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .container-fluid {
+      max-width: 1400px;
+      padding: 32px 20px;
+    }
+
+    .report-header {
+      background: white;
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      margin-bottom: 32px;
+    }
+
+    .report-title {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin-bottom: 8px;
+    }
+
+    .report-meta {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 2px solid #e9ecef;
+    }
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #666;
+    }
+
+    .meta-item i {
+      color: var(--primary);
+    }
+
+    .meta-item strong {
+      color: #333;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      border-top: 4px solid var(--primary);
+      transition: transform 0.3s;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .stat-icon {
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, var(--primary) 0%, #00897b 100%);
+      color: white;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 16px;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      color: #666;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .section-card {
+      background: white;
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      margin-bottom: 24px;
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 16px;
+      border-bottom: 3px solid var(--primary);
+    }
+
+    .recommendation-card {
+      background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+      border: 2px solid #e9ecef;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .recommendation-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 6px;
+      height: 100%;
+      background: linear-gradient(180deg, var(--success) 0%, #66bb6a 100%);
+    }
+
+    .recommendation-card.rank-2::before {
+      background: linear-gradient(180deg, var(--warning) 0%, #ffa726 100%);
+    }
+
+    .recommendation-card.rank-3::before {
+      background: linear-gradient(180deg, #2196f3 0%, #64b5f6 100%);
+    }
+
+    .recommendation-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    .rank-badge {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, var(--success) 0%, #66bb6a 100%);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      font-weight: 700;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .rank-badge.rank-2 {
+      background: linear-gradient(135deg, var(--warning) 0%, #ffa726 100%);
+    }
+
+    .rank-badge.rank-3 {
+      background: linear-gradient(135deg, #2196f3 0%, #64b5f6 100%);
+    }
+
+    .recommendation-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 16px;
+      padding-right: 60px;
+    }
+
+    .recommendation-location {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin-bottom: 4px;
+    }
+
+    .score-display {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: 2px solid #e9ecef;
+      font-weight: 600;
+    }
+
+    .score-number {
+      font-size: 1.5rem;
+      color: var(--success);
+    }
+
+    .recommendation-body {
+      display: grid;
+      gap: 16px;
+    }
+
+    .info-row {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .info-label {
+      font-weight: 600;
+      color: #666;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 140px;
+    }
+
+    .info-value {
+      color: #333;
+    }
+
+    .badge {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .badge.bg-success {
+      background: linear-gradient(135deg, var(--success) 0%, #66bb6a 100%) !important;
+    }
+
+    .badge.bg-warning {
+      background: linear-gradient(135deg, var(--warning) 0%, #ffa726 100%) !important;
+    }
+
+    .badge.bg-danger {
+      background: linear-gradient(135deg, var(--danger) 0%, #e57373 100%) !important;
+    }
+
+    .risk-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .risk-list li {
+      padding: 8px 12px;
+      background: #fff3cd;
+      border-left: 3px solid #ffc107;
+      margin-bottom: 8px;
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+
+    .risk-list li i {
+      color: #ff9800;
+      margin-right: 8px;
+    }
+
+    #map {
+      height: 500px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .table-container {
+      overflow-x: auto;
+    }
+
+    .table {
+      margin: 0;
+    }
+
+    .table thead th {
+      background: linear-gradient(135deg, var(--primary) 0%, #00897b 100%);
+      color: white;
+      border: none;
+      padding: 16px 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      letter-spacing: 0.5px;
+    }
+
+    .table tbody td {
+      padding: 14px 12px;
+      vertical-align: middle;
+      border-bottom: 1px solid #e9ecef;
+    }
+
+    .table tbody tr:hover {
+      background-color: #f8f9fa;
+    }
+
+    .model-info {
+      background: #e3f2fd;
+      border-left: 4px solid #2196f3;
+      padding: 20px;
+      border-radius: 8px;
+    }
+
+    .model-info h6 {
+      color: #1976d2;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .model-metrics {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-top: 12px;
+    }
+
+    .metric-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .metric-item i {
+      color: #2196f3;
+    }
+
+    .btn-download {
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s;
+    }
+
+    .btn-download:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 105, 92, 0.3);
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+
+    .analysis-breakdown {
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 2px dashed #e0e0e0;
+      animation: slideDown 0.3s ease-out;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .breakdown-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .breakdown-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .breakdown-item {
+      background: white;
+      border: 2px solid #e9ecef;
+      border-radius: 12px;
+      padding: 16px;
+      transition: all 0.3s;
+    }
+
+    .breakdown-item:hover {
+      border-color: var(--primary);
+      box-shadow: 0 4px 12px rgba(0, 105, 92, 0.1);
+    }
+
+    .breakdown-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      color: #666;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+    }
+
+    .breakdown-header i {
+      color: var(--primary);
+    }
+
+    .breakdown-score {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin-bottom: 8px;
+    }
+
+    .breakdown-bar {
+      height: 12px;
+      background: #e9ecef;
+      border-radius: 6px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+
+    .breakdown-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
+      border-radius: 6px;
+      transition: width 0.6s ease-out;
+    }
+
+    .breakdown-detail {
+      font-size: 0.85rem;
+      color: #666;
+    }
+
+    .btn-outline-primary {
+      border: 2px solid var(--primary);
+      color: var(--primary);
+      background: white;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+
+    .btn-outline-primary:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    @media print {
+      .navbar, .action-buttons, .btn-download, .btn-new-analysis {
+        display: none !important;
+      }
+      
+      body {
+        background: white;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .recommendation-header {
+        flex-direction: column;
+      }
+
+      .rank-badge {
+        position: static;
+        margin-bottom: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container-fluid">
+      <span class="navbar-brand">
+        <i class="fas fa-chart-line"></i> Business Feasibility Report
+      </span>
+      <a href="/" class="btn-new-analysis">
+        <i class="fas fa-plus"></i> New Analysis
+      </a>
+    </div>
+  </nav>
+
+  <div class="container-fluid">
+    <!-- Report Header -->
+    <div class="report-header">
+      <div class="report-title">
+        <i class="fas fa-file-chart"></i> Feasibility Analysis Report
+      </div>
+      <p class="text-muted mb-0">Comprehensive site recommendation for business establishment in Barobo</p>
+      
+      <div class="report-meta">
+        <div class="meta-item">
+          <i class="fas fa-calendar"></i>
+          <span><strong>Date:</strong> {{ report.input_parameters.analysis_date }}</span>
+        </div>
+        <div class="meta-item">
+          <i class="fas fa-store"></i>
+          <span><strong>Business Type:</strong> {{ report.input_parameters.business_type }}</span>
+        </div>
+        <div class="meta-item">
+          <i class="fas fa-money-bill-wave"></i>
+          <span><strong>Capital:</strong> {{ report.input_parameters.capital_investment }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary Statistics -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon"><i class="fas fa-map-marked-alt"></i></div>
+        <div class="stat-value">{{ report.analysis_summary.total_locations }}</div>
+        <div class="stat-label">Locations Analyzed</div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon"><i class="fas fa-trophy"></i></div>
+        <div class="stat-value">{{ report.analysis_summary.best_location }}</div>
+        <div class="stat-label">Top Recommendation</div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+        <div class="stat-value">{{ report.analysis_summary.high_feasibility_count }}</div>
+        <div class="stat-label">High Feasibility Sites</div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon"><i class="fas fa-chart-bar"></i></div>
+        <div class="stat-value">{{ report.analysis_summary.average_score }}</div>
+        <div class="stat-label">Average Score</div>
+      </div>
+    </div>
+
+    <!-- Top Recommendations -->
+    <div class="section-card">
+      <h2 class="section-title">
+        <i class="fas fa-medal"></i>
+        Top 3 Site Recommendations
+      </h2>
+
+      {% for rec in report.top_recommendations %}
+      <div class="recommendation-card rank-{{ rec.rank }}">
+        <div class="rank-badge rank-{{ rec.rank }}">#{{ rec.rank }}</div>
+        
+        <div class="recommendation-header">
+          <div>
+            <div class="recommendation-location">
+              <i class="fas fa-map-pin"></i> {{ rec.barangay }}
+            </div>
+            <div class="score-display">
+              <span class="score-number">{{ rec.score }}</span>
+              <span>/100</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="recommendation-body">
+          <div class="info-row">
+            <div class="info-label">
+              <i class="fas fa-clipboard-check"></i>
+              Feasibility Status:
+            </div>
+            <div class="info-value">
+              {% if rec.feasibility == 'High' %}
+                <span class="badge bg-success"><i class="fas fa-check"></i> {{ rec.feasibility }} Feasibility</span>
+              {% elif rec.feasibility == 'Medium' %}
+                <span class="badge bg-warning"><i class="fas fa-exclamation"></i> {{ rec.feasibility }} Feasibility</span>
+              {% else %}
+                <span class="badge bg-danger"><i class="fas fa-times"></i> {{ rec.feasibility }} Feasibility</span>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="info-row">
+            <div class="info-label">
+              <i class="fas fa-lightbulb"></i>
+              Key Strengths:
+            </div>
+            <div class="info-value">{{ rec.reason }}</div>
+          </div>
+
+          <div class="info-row">
+            <div class="info-label">
+              <i class="fas fa-clock"></i>
+              ROI Estimate:
+            </div>
+            <div class="info-value"><strong>{{ rec.roi_estimate }}</strong></div>
+          </div>
+
+          <div class="info-row">
+            <div class="info-label">
+              <i class="fas fa-exclamation-triangle"></i>
+              Potential Risks:
+            </div>
+            <div class="info-value">
+              <ul class="risk-list">
+                {% for risk in rec.risks %}
+                <li><i class="fas fa-circle"></i> {{ risk }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+
+          <div class="info-row">
+            <div class="info-label">
+              <i class="fas fa-chart-pie"></i>
+              Detailed Analysis:
+            </div>
+            <div class="info-value">
+              <button class="btn btn-sm btn-outline-primary" onclick="toggleAnalysis('analysis-{{ rec.rank }}')">
+                <i class="fas fa-eye"></i> View Factor Breakdown
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hidden detailed analysis section -->
+        <div id="analysis-{{ rec.rank }}" class="analysis-breakdown" style="display: none;">
+          <div class="breakdown-title">
+            <i class="fas fa-microscope"></i> Factor-by-Factor Analysis
+          </div>
+          <div class="breakdown-grid">
+            <div class="breakdown-item">
+              <div class="breakdown-header">
+                <i class="fas fa-users"></i>
+                <span>Population Score</span>
+              </div>
+              <div class="breakdown-score">{{ rec.breakdown.population_score }}/25</div>
+              <div class="breakdown-bar">
+                <div class="breakdown-fill" style="width: {{ (rec.breakdown.population_score / 25 * 100)|round }}%"></div>
+              </div>
+              <div class="breakdown-detail">
+                Population: {{ rec.population|int|format_number }} residents
+              </div>
+            </div>
+
+            <div class="breakdown-item">
+              <div class="breakdown-header">
+                <i class="fas fa-money-bill-wave"></i>
+                <span>Income Level Score</span>
+              </div>
+              <div class="breakdown-score">{{ rec.breakdown.income_score }}/25</div>
+              <div class="breakdown-bar">
+                <div class="breakdown-fill" style="width: {{ (rec.breakdown.income_score / 25 * 100)|round }}%"></div>
+              </div>
+              <div class="breakdown-detail">
+                Average Income: ₱{{ rec.avg_income|int|format_number }}/month
+              </div>
+            </div>
+
+            <div class="breakdown-item">
+              <div class="breakdown-header">
+                <i class="fas fa-store-slash"></i>
+                <span>Competition Score</span>
+              </div>
+              <div class="breakdown-score">{{ rec.breakdown.competition_score }}/20</div>
+              <div class="breakdown-bar">
+                <div class="breakdown-fill" style="width: {{ (rec.breakdown.competition_score / 20 * 100)|round }}%"></div>
+              </div>
+              <div class="breakdown-detail">
+                Business Density: {{ rec.breakdown.business_density }} per 1K residents
+              </div>
+            </div>
+
+            <div class="breakdown-item">
+              <div class="breakdown-header">
+                <i class="fas fa-road"></i>
+                <span>Infrastructure Score</span>
+              </div>
+              <div class="breakdown-score">{{ rec.breakdown.infrastructure_score }}/15</div>
+              <div class="breakdown-bar">
+                <div class="breakdown-fill" style="width: {{ (rec.breakdown.infrastructure_score / 15 * 100)|round }}%"></div>
+              </div>
+              <div class="breakdown-detail">
+                Roads, utilities, and facilities quality
+              </div>
+            </div>
+
+            <div class="breakdown-item">
+              <div class="breakdown-header">
+                <i class="fas fa-map-marked-alt"></i>
+                <span>Accessibility Score</span>
+              </div>
+              <div class="breakdown-score">{{ rec.breakdown.accessibility_score }}/15</div>
+              <div class="breakdown-bar">
+                <div class="breakdown-fill" style="width: {{ (rec.breakdown.accessibility_score / 15 * 100)|round }}%"></div>
+              </div>
+              <div class="breakdown-detail">
+                Transportation and location visibility
+              </div>
+            </div>
+
+            <div class="breakdown-item">
+              <div class="breakdown-header">
+                <i class="fas fa-calculator"></i>
+                <span>Capital Efficiency Score</span>
+              </div>
+              <div class="breakdown-score">{{ rec.breakdown.capital_efficiency_score }}/10</div>
+              <div class="breakdown-bar">
+                <div class="breakdown-fill" style="width: {{ (rec.breakdown.capital_efficiency_score / 10 * 100)|round }}%"></div>
+              </div>
+              <div class="breakdown-detail">
+                Market potential: ₱{{ rec.breakdown.market_potential|int|format_number }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Interactive Map -->
+    <div class="section-card">
+      <h2 class="section-title">
+        <i class="fas fa-globe"></i>
+        Geospatial Analysis Map
+      </h2>
+      <div id="map"></div>
+    </div>
+
+    <!-- All Results Table -->
+    <div class="section-card">
+      <h2 class="section-title">
+        <i class="fas fa-table"></i>
+        Complete Analysis Results
+      </h2>
+      
+      <div class="table-container">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Barangay</th>
+              <th>Population</th>
+              <th>Avg Income</th>
+              <th>Competition</th>
+              <th>Score</th>
+              <th>Feasibility</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for result in report.all_results %}
+            <tr>
+              <td><strong>#{{ loop.index }}</strong></td>
+              <td><strong>{{ result.barangay }}</strong></td>
+              <td>{{ "{:,}".format(result.population) }}</td>
+              <td>₱{{ "{:,}".format(result.avg_income|int) }}</td>
+              <td>{{ result.business_count }} businesses</td>
+              <td><strong>{{ result.score }}</strong>/100</td>
+              <td>
+                {% if result.feasibility == 'High' %}
+                  <span class="badge bg-success">{{ result.feasibility }}</span>
+                {% elif result.feasibility == 'Medium' %}
+                  <span class="badge bg-warning">{{ result.feasibility }}</span>
+                {% else %}
+                  <span class="badge bg-danger">{{ result.feasibility }}</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Model Information -->
+    <div class="section-card">
+      <h2 class="section-title">
+        <i class="fas fa-cogs"></i>
+        Analysis Methodology
+      </h2>
+      
+      <div class="model-info">
+        <h6><i class="fas fa-brain"></i> Machine Learning Model Information</h6>
+        <p class="mb-2">This analysis was generated using advanced predictive modeling techniques:</p>
+        
+        <div class="model-metrics">
+          <div class="metric-item">
+            <i class="fas fa-check-circle"></i>
+            <span><strong>Algorithm:</strong> {{ report.model_performance.algorithm }}</span>
+          </div>
+          <div class="metric-item">
+            <i class="fas fa-percentage"></i>
+            <span><strong>Accuracy:</strong> {{ (report.model_performance.accuracy * 100)|int }}%</span>
+          </div>
+          <div class="metric-item">
+            <i class="fas fa-database"></i>
+            <span><strong>Training Samples:</strong> {{ report.model_performance.training_samples }}</span>
+          </div>
+        </div>
+        
+        <p class="mt-3 mb-0">
+          <strong>Key Features Analyzed:</strong> 
+          {% for feature in report.model_performance.features %}
+            {{ feature }}{% if not loop.last %}, {% endif %}
+          {% endfor %}
+        </p>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <button onclick="window.print()" class="btn-download">
+        <i class="fas fa-print"></i>
+        Print Report
+      </button>
+      
+      <a href="/" class="btn-download" style="text-decoration: none;">
+        <i class="fas fa-redo"></i>
+        New Analysis
+      </a>
+    </div>
+  </div>
+
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script>
+    const reportData = {{ report.top_recommendations|tojson }};
+    const allResults = {{ report.all_results|tojson }};
+
+    // Initialize map
+    const map = L.map('map').setView([8.5353, 126.1194], 12);
+    
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 18,
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    const colorMap = {
+      'High': '#2e7d32',
+      'Medium': '#f57c00',
+      'Low': '#c62828'
+    };
+
+    const iconMap = {
+      1: '🥇',
+      2: '🥈',
+      3: '🥉'
+    };
+
+    // Add markers for all locations
+    allResults.forEach(result => {
+      const color = colorMap[result.feasibility];
+      const topRec = reportData.find(r => r.barangay === result.barangay);
+      const isTop = topRec !== undefined;
+      
+      const marker = L.circleMarker([result.lat, result.lon], {
+        color: 'white',
+        fillColor: color,
+        fillOpacity: isTop ? 1 : 0.7,
+        weight: isTop ? 4 : 2,
+        radius: isTop ? 16 : 10
+      }).addTo(map);
+
+      let popupContent = `
+        <div style="min-width: 220px; font-family: 'Inter', sans-serif;">
+          <h6 style="margin: 0 0 12px 0; color: ${color}; font-weight: 700; border-bottom: 2px solid ${color}; padding-bottom: 8px;">
+            ${isTop ? iconMap[topRec.rank] + ' ' : ''}<i class="fas fa-map-marker-alt"></i> ${result.barangay}
+          </h6>
+          <table style="width: 100%; font-size: 0.9rem;">
+            <tr>
+              <td style="padding: 4px 0;"><strong>Score:</strong></td>
+              <td style="text-align: right;">${result.score}/100</td>
+            </tr>
+            <tr>
+              <td style="padding: 4px 0;"><strong>Population:</strong></td>
+              <td style="text-align: right;">${result.population.toLocaleString()}</td>
+            </tr>
+            <tr>
+              <td style="padding: 4px 0;"><strong>Avg Income:</strong></td>
+              <td style="text-align: right;">₱${result.avg_income.toLocaleString()}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0 4px 0;" colspan="2">
+                <div style="background: ${color}; color: white; padding: 8px; border-radius: 6px; text-align: center; font-weight: 600;">
+                  ${result.feasibility} Feasibility
+                </div>
+              </td>
+            </tr>
+          </table>
+      `;
+
+      if (isTop) {
+        popupContent += `
+          <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #e0e0e0;">
+            <strong style="color: ${color};">⭐ Top ${topRec.rank} Recommendation</strong>
+            <p style="margin: 8px 0 0 0; font-size: 0.85rem; color: #666;">
+              ${topRec.reason.substring(0, 60)}...
+            </p>
+          </div>
+        `;
+      }
+
+      popupContent += '</div>';
+      marker.bindPopup(popupContent);
+
+      marker.on('mouseover', function() {
+        this.setStyle({
+          radius: isTop ? 20 : 14
+        });
+      });
+
+      marker.on('mouseout', function() {
+        this.setStyle({
+          radius: isTop ? 16 : 10
+        });
+      });
+    });
+
+    // Fit map to show all markers
+    const group = L.featureGroup(
+      allResults.map(r => L.marker([r.lat, r.lon]))
+    );
+    map.fitBounds(group.getBounds().pad(0.1));
+
+    function downloadPDF() {
+      alert('PDF export functionality would integrate with a PDF generation library like jsPDF or server-side PDF generation.');
+    }
+
+    function toggleAnalysis(id) {
+      const element = document.getElementById(id);
+      const button = event.target.closest('button');
+      
+      if (element.style.display === 'none') {
+        element.style.display = 'block';
+        button.innerHTML = '<i class="fas fa-eye-slash"></i> Hide Factor Breakdown';
+      } else {
+        element.style.display = 'none';
+        button.innerHTML = '<i class="fas fa-eye"></i> View Factor Breakdown';
+      }
+    }
+
+    // Custom filter for number formatting
+    function formatNumber(num) {
+      return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+  </script>
+</body>
+</html>
